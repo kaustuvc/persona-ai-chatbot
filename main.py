@@ -16,8 +16,8 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
      menu_items={
-        'Get Help': 'https://www.extremelycoolapp.com/help',
-        'Report a bug': "https://www.extremelycoolapp.com/bug",
+        'Get Help': 'https://github.com/kaustuvc/persona-ai-chatbot',
+        'Report a bug': "https://github.com/kaustuvc/persona-ai-chatbot",
         'About': "This is an AI chatbot that talks with you in famous entrepreneur Hitesh Choudhary's persona"
     }
 )
@@ -36,7 +36,6 @@ client = init_genai_client()
 st.markdown("""
 <div style="text-align: center">
     <h1> Persona AI Chatbot</h1>
-    <a href="https://github.com/kaustuvc/persona-ai-chatbot">Github Repo</a>
     <p style="text-align: end"> ~ By Kaustuv Chatterjee</p>
 </div>
 """, unsafe_allow_html=True)
