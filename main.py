@@ -23,7 +23,7 @@ st.set_page_config(
 )
 
 #Initialize Gemini client
-HF_API_URL = "https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3-8B-Instruct"
+HF_API_URL = "https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta"
 HF_HEADERS = {
     "Authorization": f"Bearer {st.secrets['HF_API_TOKEN']}",
     "Content-Type": "application/json"
@@ -31,7 +31,7 @@ HF_HEADERS = {
 
 def call_huggingface(system_prompt, user_prompt):
     payload = {
-        "inputs": f"<|system|>\n{system_prompt}\n<|user|>\n{user_prompt}\n<|assistant|>",
+        "inputs": f"System:\n{system_prompt}\n\nUser:\n{user_prompt}\n\nAssistant:",
         "parameters": {
             "max_new_tokens": 500,
             "temperature": 0.1,
