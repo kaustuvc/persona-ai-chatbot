@@ -3,7 +3,7 @@
 The persona AI Chatbot is nothing but a GPT model mimicking human behaviour of someone with the help of `SYSTEM_PROMPT` as context. In this application I have made an AI Persona of renowned tech entrepreneur Hitesh Choudhary. I am now going to guide you on how to make this project yourself. However, no explanation required concepts will be given.
 ## Tech Stack
 - `Python` as development language
-- `Gemini API` to train the GPT model
+- `GROQ API` to train the GPT model
 - `uv` package manager
 - `streamlit` for making user-friendly UI
 ## Dependencies
