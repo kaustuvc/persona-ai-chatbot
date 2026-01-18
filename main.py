@@ -2,8 +2,8 @@ import streamlit as st
 import os
 from dotenv import load_dotenv
 from PIL import Image
-from google import genai
-from google.genai import types
+import requests
+
 
 #Load environment variables
 load_dotenv()
@@ -23,15 +23,28 @@ st.set_page_config(
 )
 
 #Initialize Gemini client
-def init_genai_client():
-    try:
-        return genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
-    except Exception as e:
-        st.error(f"Failed to initialize genai client: {str(e)}")
-        st.error("Please make sure your GEMINI_API_KEY is set in your .env file and is correct")
-        return None
+HF_API_URL = "https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3-8B-Instruct"
+HF_HEADERS = {
+    "Authorization": f"Bearer {st.secrets['HF_API_TOKEN']}",
+    "Content-Type": "application/json"
+}
 
-client = init_genai_client()
+def call_huggingface(prompt):
+    payload = {
+        "inputs": f"<|system|>\n{SYSTEM_PROMPT}\n<|user|>\n{prompt}\n<|assistant|>",
+        "parameters": {
+            "max_new_tokens": 500,
+            "temperature": 0.1,
+            "return_full_text": False
+        }
+    }
+
+    response = requests.post(HF_API_URL, headers=HF_HEADERS, json=payload)
+    response.raise_for_status()
+
+    result = response.json()
+    return result[0]["generated_text"]
+
 
 st.markdown("""
 <div style="text-align: center">
@@ -238,18 +251,13 @@ if prompt := st.chat_input("Type something to Hitesh Sir"):
     with chatbox:
         with st.spinner("Hitesh Sir soch rahe hain... kuch tagda hi bataenge! :thinking_face:"):
             try:
-                response = client.models.generate_content(
-                model="gemini-2.0-flash",
-                config=types.GenerateContentConfig(
-                        system_instruction=SYSTEM_PROMPT,
-                        max_output_tokens=500,
-                        temperature=0.1
-                    ),
-                    contents=prompt
-                )
-                #Add assistant response to chat history
-                st.session_state.messages.append({"role": "assistant", "content": response.text})
-    
+                assistant_reply = call_huggingface(SYSTEM_PROMPT, prompt)
+
+                st.session_state.messages.append({
+                    "role": "assistant",
+                    "content": assistant_reply
+                })
+
                 if st.session_state.messages:
                     latest_message = st.session_state.messages[-1]
                     latest_content = latest_message["content"]
