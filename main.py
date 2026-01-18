@@ -29,9 +29,9 @@ HF_HEADERS = {
     "Content-Type": "application/json"
 }
 
-def call_huggingface(prompt):
+def call_huggingface(system_prompt, user_prompt):
     payload = {
-        "inputs": f"<|system|>\n{SYSTEM_PROMPT}\n<|user|>\n{prompt}\n<|assistant|>",
+        "inputs": f"<|system|>\n{system_prompt}\n<|user|>\n{user_prompt}\n<|assistant|>",
         "parameters": {
             "max_new_tokens": 500,
             "temperature": 0.1,
@@ -39,11 +39,17 @@ def call_huggingface(prompt):
         }
     }
 
-    response = requests.post(HF_API_URL, headers=HF_HEADERS, json=payload)
+    response = requests.post(
+        HF_API_URL,
+        headers=HF_HEADERS,
+        json=payload,
+        timeout=60
+    )
     response.raise_for_status()
 
     result = response.json()
     return result[0]["generated_text"]
+
 
 
 st.markdown("""
