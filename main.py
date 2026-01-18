@@ -2,8 +2,7 @@ import streamlit as st
 import os
 from dotenv import load_dotenv
 from PIL import Image
-import requests
-
+from groq import Groq
 
 #Load environment variables
 load_dotenv()
@@ -22,33 +21,29 @@ st.set_page_config(
     }
 )
 
-#Initialize Gemini client
-HF_API_URL = "https://api-inference.huggingface.co/models/TinyLlama/TinyLlama-1.1B-Chat-v1.0"
-HF_HEADERS = {
-    "Authorization": f"Bearer {st.secrets['HF_API_TOKEN']}",
-    "Content-Type": "application/json"
-}
+#Initialize Groq client
+def init_groq_client():
+    try:
+        return Groq(api_key=st.secrets["GROQ_API_KEY"])
+    except Exception as e:
+        st.error(f"Failed to initialize Groq client: {e}")
+        return None
 
-def call_huggingface(system_prompt, user_prompt):
-    payload = {
-        "inputs": f"<|system|>\n{system_prompt}\n<|user|>\n{user_prompt}\n<|assistant|>",
-        "parameters": {
-            "max_new_tokens": 400,
-            "temperature": 0.2,
-            "return_full_text": False
-        }
-    }
+client = init_groq_client()
 
-    response = requests.post(
-        HF_API_URL,
-        headers=HF_HEADERS,
-        json=payload,
-        timeout=60
+#Groq helper function
+def call_groq(system_prompt, user_prompt):
+    completion = client.chat.completions.create(
+        model="llama-3.1-8b-instant",
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt}
+        ],
+        temperature=0.2,
+        max_tokens=500
     )
-    response.raise_for_status()
 
-    result = response.json()
-    return result[0]["generated_text"]
+    return completion.choices[0].message.content
 
 st.markdown("""
 <div style="text-align: center">
@@ -255,7 +250,7 @@ if prompt := st.chat_input("Type something to Hitesh Sir"):
     with chatbox:
         with st.spinner("Hitesh Sir soch rahe hain... kuch tagda hi bataenge! :thinking_face:"):
             try:
-                assistant_reply = call_huggingface(SYSTEM_PROMPT, prompt)
+                assistant_reply = call_groq(SYSTEM_PROMPT, prompt)
 
                 st.session_state.messages.append({
                     "role": "assistant",
