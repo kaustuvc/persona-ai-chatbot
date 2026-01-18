@@ -23,7 +23,7 @@ st.set_page_config(
 )
 
 #Initialize Gemini client
-HF_API_URL = "https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta"
+HF_API_URL = "https://api-inference.huggingface.co/models/TinyLlama/TinyLlama-1.1B-Chat-v1.0"
 HF_HEADERS = {
     "Authorization": f"Bearer {st.secrets['HF_API_TOKEN']}",
     "Content-Type": "application/json"
@@ -31,10 +31,10 @@ HF_HEADERS = {
 
 def call_huggingface(system_prompt, user_prompt):
     payload = {
-        "inputs": f"System:\n{system_prompt}\n\nUser:\n{user_prompt}\n\nAssistant:",
+        "inputs": f"<|system|>\n{system_prompt}\n<|user|>\n{user_prompt}\n<|assistant|>",
         "parameters": {
-            "max_new_tokens": 500,
-            "temperature": 0.1,
+            "max_new_tokens": 400,
+            "temperature": 0.2,
             "return_full_text": False
         }
     }
@@ -49,8 +49,6 @@ def call_huggingface(system_prompt, user_prompt):
 
     result = response.json()
     return result[0]["generated_text"]
-
-
 
 st.markdown("""
 <div style="text-align: center">
