@@ -25,7 +25,7 @@ st.set_page_config(
 #Initialize Gemini client
 def init_genai_client():
     try:
-        return genai.Client(api_key=st.secets["GEMINI_API_KEY"])
+        return genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
     except Exception as e:
         st.error(f"Failed to initialize genai client: {str(e)}")
         st.error("Please make sure your GEMINI_API_KEY is set in your .env file and is correct")
